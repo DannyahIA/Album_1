@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="pt">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nosso Mundo Mágico</title>
+    <!-- Importando fontes do Google -->
+    <link
+      href="https://fonts.googleapis.com/css?family=Playfair+Display|Roboto&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* Reset e estilos globais */
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      body {
+        font-family: "Roboto", sans-serif;
+        background: linear-gradient(45deg, #6a0dad, #ffd700);
+        overflow-x: hidden;
+        position: relative;
+      }
+      h1,
+      h2,
+      h3 {
+        font-family: "Playfair Display", serif;
+      }
+
+      /* ------------------------
+       NAVEGAÇÃO
+       ------------------------ */
+      nav {
+        display: flex;
+        justify-content: center;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 10px;
+        position: sticky;
+        top: 0;
+        z-index: 500;
+      }
+      nav a {
+        margin: 0 15px;
+        text-decoration: none;
+        color: #333;
+        font-weight: bold;
+        transition: color 0.3s;
+      }
+      nav a:hover {
+        color: #6a0dad;
+      }
+
+      /* ------------------------
+       HOME (Página Inicial)
+       ------------------------ */
+      #home {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        position: relative;
+        padding: 20px;
+      }
+      #revealMessage {
+        margin-top: 20px;
+        padding: 10px 20px;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 5px;
+        background-color: #6a0dad;
+        color: #fff;
+        transition: background 0.3s;
+      }
+      #revealMessage:hover {
+        background-color: #4e0874;
+      }
+      #special-message {
+        margin-top: 20px;
+        background: rgba(255, 255, 255, 0.8);
+        padding: 20px;
+        border-radius: 10px;
+        display: none;
+        font-size: 1.2rem;
+      }
+
+      /* ---------- Timeline ---------- */
+      #timeline {
+        padding: 50px 20px;
+        background: #fefefe;
+      }
+      #timeline h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        margin-bottom: 40px;
+        color: #333;
+      }
+      .timeline-container {
+        max-width: 800px;
+        margin: 0 auto;
+        position: relative;
+      }
+      .timeline-event {
+        background: #f9f9f9;
+        border-left: 4px solid #6a0dad;
+        padding: 20px 30px;
+        margin-bottom: 30px;
+        cursor: pointer;
+        opacity: 0;
+        transform: translateY(20px);
+        transition: all 0.6s ease-out;
+      }
+      .timeline-event.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+      .timeline-event h3 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+        color: #6a0dad;
+      }
+      .timeline-event p {
+        font-size: 1rem;
+        margin: 5px 0;
+        color: #555;
+      }
+
+      /* ---------- Modal ---------- */
+      .modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5); /* Fundo semi-transparente */
+        display: none;
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal-content {
+        background: transparent; /* Conteúdo com fundo transparente */
+        padding: 20px;
+        border-radius: 5px;
+        max-width: 90%;
+        max-height: 90%;
+        overflow-y: auto;
+        position: relative;
+      }
+      .modal-close {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        cursor: pointer;
+        font-size: 24px;
+        color: #fff;
+      }
+
+      /* ---------- Galeria de Fotos/Vídeos ---------- */
+      .gallery {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+        max-width: 1200px;
+        margin: 20px auto;
+      }
+      .photo-card {
+        width: 200px; /* Largura fixa para a galeria padrão */
+        aspect-ratio: 3 / 4; /* Proporção 3:4 */
+        background: #fff;
+        padding: 10px;
+        border-radius: 3px;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        position: relative;
+        overflow: hidden;
+        transition: transform 0.3s;
+      }
+      .photo-card img,
+      .photo-card video {
+        width: 100%;
+        height: 75%;
+        object-fit: cover; /* Ajusta a mídia para preencher o card mantendo a proporção */
+        border-radius: 3px;
+      }
+      /* Classes de rotação pré-definidas */
+      .rotate-1 {
+        transform: rotate(-5deg);
+      }
+      .rotate-2 {
+        transform: rotate(5deg);
+      }
+      .rotate-3 {
+        transform: rotate(-3deg);
+      }
+      .rotate-4 {
+        transform: rotate(3deg);
+      }
+
+      /* Photo Cards maiores no modal */
+      .modal .gallery .photo-card {
+        width: 300px; /* Tamanho maior para o modal */
+        padding: 15px;
+      }
+
+      /* MÚSICA (Trilha Sonora) */
+      #music .music-players {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 15px;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #music .music-players iframe {
+        flex: 0 1 20%;
+        min-width: 150px;
+        border-radius: 12px;
+      }
+      @media (max-width: 768px) {
+        #music .music-players iframe {
+          flex: 0 1 45%;
+        }
+      }
+      @media (max-width: 480px) {
+        #music .music-players iframe {
+          flex: 0 1 90%;
+        }
+      }
+
+      /* Responsividade */
+      @media (max-width: 768px) {
+        .photo-card {
+          width: 150px;
+        }
+        .modal .gallery .photo-card {
+          width: 200px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Menu de navegação -->
+    <nav>
+      <a href="#home">Home</a>
+      <a href="#gallery">Galeria</a>
+      <a href="#music">Música</a>
+      <a href="#timeline">Timeline</a>
+      <a href="#surprise">Surpresa</a>
+    </nav>
+
+    <!-- Seção Home -->
+    <section id="home">
+      <h1>Bem-vinda ao Nosso Mundo Mágico</h1>
+      <p>Relembre momentos especiais e nossa história encantadora.</p>
+    </section>
+
+    <!-- Seção Galeria -->
+    <div id="gallery" class="gallery">
+      <div class="photo-card">
+        <img src="assets/24.08.2024/03h03.webp" alt="Foto 1" />
+      </div>
+      <div class="photo-card">
+        <img src="assets/11.09.2024/19h32.jpg" alt="Foto 2" />
+      </div>
+      <div class="photo-card">
+        <img src="assets/22.09.2024/16h53.jpg" alt="Foto 2" />
+      </div>
+    </div>
+
+    <!-- Seção Música -->
+    <section id="music">
+      <h2>Nossa Trilha Sonora</h2>
+      <p>Toque nossas músicas favoritas</p>
+      <div class="music-players">
+        <iframe
+          name="ce_me_viu_ontem"
+          src="https://open.spotify.com/embed/track/6Iprd2vrpBI06WoN73BMVO"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="i_was_made_for_loving_you"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/07q0QVgO56EorrSGHC48y3?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="girlfriend"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/45hOioMDJktr86iKDHC8gr?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="complicated"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/5xEM5hIgJ1jjgcEBfpkt2F?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="me_and_you"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/1QSJPLYeRSu1AN8EuD9F5o?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="eu_te_amo_eu_te_odeio"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/1543cODQhOSwvHkYy0SoKm?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="disk_me"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/6VO8haKi0pZxVpnnVGgWZI?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="all_star"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/3g5FrnRdbmDQyWNiDIprts?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="caso_serio"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/2HvuyQEnKR82zwfIuCBaWH?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="xuxuzinho"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/3HQN3KYTWX5KqM7mFyYg3l?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="mania_de_voce"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/6owwZC8gUvrBuygvOHaYXb?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+
+        <iframe
+          name="all_i_wanted"
+          style="border-radius: 12px"
+          src="https://open.spotify.com/embed/track/1Bv3h7Vc4AaYA2BcSM3rVd?utm_source=generator"
+          width="20%"
+          height="152"
+          frameborder="0"
+          allowfullscreen=""
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy"
+        ></iframe>
+      </div>
+    </section>
+
+    <!-- Seção Linha do Tempo -->
+    <section id="timeline">
+      <h2>Linha do Tempo da Nossa História</h2>
+      <div class="timeline-container">
+        <!-- Cada evento possui um data-modal que indica qual modal abrir -->
+        <div class="timeline-event" data-modal="modal24.08.2024">
+          <h3>24 de Agosto de 2024</h3>
+          <p>
+            Nossos caminhos se cruzaram em uma noite inesquecível, onde a
+            conexão foi imediata.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal30.08.2024">
+          <h3>30 de Agosto de 2024 – Primeiro Encontro</h3>
+          <p>
+            Nosso primeiro encontro aconteceu na TORK, refletindo nossa sintonia
+            e iniciando uma aventura apaixonante.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal07.09.2024">
+          <h3>07 de Setembro de 2024 – Festa de Aniversário</h3>
+          <p>
+            Celebramos seu aniversário com surpresas e alegria, criando memórias
+            que aqueceram nossos corações.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal11.09.2024">
+          <h3>11 de Setembro de 2024 – Encontro no Lucca</h3>
+          <p>
+            Um encontro acolhedor no Lucca, marcado por conversas sinceras e
+            sorrisos genuínos.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal18.09.2024">
+          <h3>13 de Setembro de 2024 – Almoço Especial</h3>
+          <p>
+            Compartilhamos nosso primeiro almoço juntos, transformando um
+            momento simples em algo extraordinário.
+          </p>
+          <p>
+            Desfrutamos de um almoço no MC, onde cada detalhe reforçou nossa
+            cumplicidade.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal22.09.2024">
+          <h3>22 de Setembro de 2024 – Picnic no Botânico</h3>
+          <p>
+            Um encantador picnic em meio à natureza, que nos proporcionou
+            momentos de pura magia.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal25.09.2024">
+          <h3>25 de Setembro de 2024 – No James</h3>
+          <p>
+            Vivenciamos momentos inesquecíveis no James, onde a conexão entre
+            nós se fortaleceu ainda mais.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal28.09.2024">
+          <h3>05 de Outubro de 2024 – Tatuagens e Primeira Vez</h3>
+          <p>
+            Acompanhei você em suas tatuagens e celebramos nosso primeiro
+            momento íntimo, marcando um novo capítulo na nossa história.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal11.10.2024">
+          <h3>06 de Outubro de 2024 – O mais barato do Spedini</h3>
+          <p>Comemos no spedini do shopping curitiba juntos no almoço</p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal12.10.2024">
+          <h3>12 de Outubro de 2024 – No Belvedere Bar</h3>
+          <p>
+            Em uma noite memorável no Belvedere Bar, você percebeu a
+            profundidade dos nossos sentimentos.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal18.10.2024">
+          <h3>18 a 20 de Outubro de 2024 – Pedrão e 'Bridgerton'</h3>
+          <p>
+            Nossa primeira experiência no Pedrão, ao lado do Vitor, e um fim de
+            semana assistindo 'Bridgerton' que selou nossa cumplicidade.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal24.10.2024">
+          <h3>24 de Outubro de 2024 – Almoço</h3>
+        </div>
+
+        <div class="timeline-event" data-modal="modal27.10.2024">
+          <h3>27 de Outubro de 2024 – Conhecendo a Família</h3>
+          <p>
+            Você conheceu meus pais, um passo importante que fortaleceu nossos
+            laços e sonhos em conjunto.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal31.10.2024">
+          <h3>31 de Outubro de 2024 – Show Bruno Mars</h3>
+        </div>
+
+        <div class="timeline-event" data-modal="modal02.11.2024">
+          <h3>02 de Novembro de 2024 – Café Surpresa</h3>
+          <p>
+            Levei um café no horário de almoço e, mesmo com uma pequena bronca,
+            o gesto se transformou em uma doce lembrança.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal14.11.2024">
+          <h3>14 de Novembro de 2024 – Show da Fresno</h3>
+          <p>
+            Vibramos juntos no show da Fresno, celebrando a energia da música e
+            a magia do nosso encontro.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal15.11.2024">
+          <h3>15 de Novembro de 2024 – Pedido de Namoro</h3>
+          <p>
+            Te pedi em namoro oficialmente e comemoramos com um passeio pelo
+            museu seguido de um delicioso café no Café 217.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal16.11.2024">
+          <h3>16 de Novembro de 2024 – Primeiro Jogo no Estádio</h3>
+          <p>
+            Assisti ao meu primeiro jogo em estádio, uma experiência emocionante
+            compartilhada com você.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal17.11.2024">
+          <h3>17 de Novembro de 2024 – Pátio Batel</h3>
+          <p>
+            No Pátio Batel, sentimos como se pudéssemos conquistar o mundo,
+            fortalecendo nossa união.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal19.11.2024">
+          <h3>29 de Novembro de 2024 – Encontro no Giantura</h3>
+          <p>
+            Vivenciamos um encontro especial no Giantura, repleto de intimidade
+            e significado para nós.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal06.12.2024">
+          <h3>06 de Dezembro de 2024 – Primeira Viagem a Guaratuba</h3>
+          <p>
+            Embarcamos na nossa primeira viagem juntos a Guaratuba, iniciando
+            uma série de aventuras inesquecíveis.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal11.12.2024">
+          <h3>11 de Dezembro de 2024 – Filme no Mueller</h3>
+          <p>
+            Assistimos a um filme no Mueller, mergulhando em uma atmosfera de
+            romance e nostalgia.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal13.12.2024">
+          <h3>13 de Dezembro de 2024 – Diversão e Risadas</h3>
+          <p>
+            Rimos e criamos memórias únicas enquanto batíamos carteirinha em
+            nosso lugar especial.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal15.12.2024">
+          <h3>15 de Dezembro de 2024 – Encontro Familiar</h3>
+          <p>
+            Fomos com meus pais a um evento na igreja da sua mãe, fortalecendo
+            os laços entre nossas famílias.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal18.12.2024">
+          <h3>18 de Dezembro de 2024 – Decorações de Natal</h3>
+          <p>
+            Levamos a Malu para apreciar as encantadoras decorações natalinas,
+            imersos no espírito festivo.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal20.12.2024">
+          <h3>20 de Dezembro de 2024 – Casa do Papai Noel</h3>
+          <p>
+            Visitamos a casa do Papai Noel com a Malu, vivenciando a magia do
+            Natal de forma divertida.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal22.12.2024">
+          <h3>22 de Dezembro de 2024 – Show do Afonso Padilha</h3>
+          <p>
+            Curtemos nosso primeiro show do Afonso Padilha, uma experiência
+            vibrante e inesquecível.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal24.12.2024">
+          <h3>25 de Dezembro de 2024 – Batevolta e Ferryboat</h3>
+          <p>
+            Vivenciamos seu primeiro batevolta e um encantador passeio de
+            ferryboat, ligando Caiobá a Guaratuba com muita aventura.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal26.12.2024">
+          <h3>29 de Dezembro de 2024 – Turismo em Curitiba</h3>
+          <p>
+            Rodamos Curitiba inteira em um ônibus turístico, transformando um
+            dia comum em uma celebração inesquecível.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal31.12.2024">
+          <h3>31 de Dezembro de 2024 – Virada de Ano Juntos</h3>
+          <p>
+            Celebramos a chegada de um novo ano lado a lado, com muita emoção e
+            alegria.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal01.01.2025">
+          <h3>01 de Janeiro de 2025 – Passeio na Ilha do Mel</h3>
+          <p>
+            Exploramos a encantadora Ilha do Mel, vivendo um dia perfeito
+            repleto de harmonia e amor.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal03.01.2025">
+          <h3>10 de Janeiro de 2025 – Tradição na Blood</h3>
+          <p>
+            Voltamos a bater carteirinha na Blood, relembrando momentos
+            divertidos e espontâneos.
+          </p>
+        </div>
+
+        <div class="timeline-event" data-modal="modal11.01.2025">
+          <h3>11 a 12 de Janeiro de 2025 – Viagem a Itajaí</h3>
+          <p>
+            De 11 a 12 de Janeiro de 2025, exploramos Itajaí, conhecendo Penha,
+            BC e outros encantadores locais.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div id="modal24.08.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>24 de Agosto de 2024 - Detalhes do Dia</h3>
+        <!-- Galeria do dia -->
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/24.08.2024/18h44.jpeg" />
+          </div>
+          <div class="photo-card">
+            <img
+              src="assets/24.08.2024/NossaPrimeiraFotoJuntos.jpeg"
+              alt="Nossa primeira foto"
+            />
+          </div>
+          <div class="photo-card">
+            <img src="assets/24.08.2024/22h25.jpg" alt="Nossa primeira foto" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/24.08.2024/23h35.jpg" alt="Nossa primeira foto" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/24.08.2024/03h03.webp" alt="Nossa primeira foto" />
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/24.08.2024/01h48.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/24.08.2024/01h59.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para o evento de 30 de Agosto de 2024 -->
+    <div id="modal30.08.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>30 de Agosto de 2024 – Primeiro Encontro</h3>
+        <!-- Galeria do dia -->
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/30.08.2024/22h20.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/30.08.2024/22h50.jpg" />
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/30.08.2024/20h47.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para o evento de 07 de Setembro de 2024 -->
+    <div id="modal07.09.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>07 de Setembro de 2024 – Aniversário Dudinhaze</h3>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/07.09.2024/16h01.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/07.09.2024/18h11.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/07.09.2024/18h18.jpg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para o evento de 11 de Setembro de 2024 -->
+    <div id="modal11.09.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>11 de Setembro de 2024 – Primeiro café no Lucca</h3>
+        <!-- Galeria do dia -->
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/11.09.2024/19h33.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/11.09.2024/19h32.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/11.09.2024/12h32.png" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/11.09.2024/14h49.png" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para o evento de 18 de Setembro de 2024 -->
+    <div id="modal18.09.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <h3>18 de Setembro de 2024 – Primeiro Almoço Juntos</h3>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/18.09.2024/13h02.webp" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal para o evento de 18 de Setembro de 2024 -->
+    <div id="modal22.09.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/22.09.2024/14h31.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/22.09.2024/16h53.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/22.09.2024/18h08.webp" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal25.09.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/25.09.2024/19h55.jpg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal11.10.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/11.10.2024/12h28.jpg" />
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/11.10.2024/11h39.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/11.10.2024/11h39_2.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/11.10.2024/11h39_3.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/11.10.2024/11h39_4.mp4" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal12.10.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/12.10.2024/21h57.webp" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/12.10.2024/1000166440.jpg" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal18.10.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/18.10.2024/00h50.webp" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/18.10.2024/21h52.webp" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal24.10.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/24.10.2024/13h07.webp" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal14.11.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <img src="assets/14.11.2024/20h41.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/14.11.2024/20h42.jpg" />
+          </div>
+          <div class="photo-card">
+            <img src="assets/14.11.2024/IMG_1913.heic" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal15.11.2024" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <div class="gallery">
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/15.11.2024/IMG_2115.mov" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/15.11.2024/IMG_2087.mov" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+          <div class="photo-card">
+            <video controls>
+              <source src="assets/15.11.2024/IMG_2117.mov" type="video/mp4" />
+              Seu navegador não suporta vídeo.
+            </video>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Modal para exibir a foto em tamanho real -->
+    <div id="photoModal" class="modal">
+      <div class="modal-content">
+        <span class="modal-close">&times;</span>
+        <img
+          id="fullImage"
+          src=""
+          alt="Foto em Tamanho Real"
+          style="
+            max-width: 100%;
+            max-height: 90vh;
+            display: block;
+            margin: 0 auto;
+          "
+        />
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // --------- Animação dos Eventos na Timeline (aparecer ao rolar) ---------
+        const events = document.querySelectorAll(".timeline-event");
+        const options = {
+          root: null,
+          rootMargin: "0px",
+          threshold: 0.2,
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("visible");
+              observer.unobserve(entry.target);
+            }
+          });
+        }, options);
+
+        events.forEach((event) => observer.observe(event));
+
+        // --------- Abertura dos Modais de Timeline ---------
+        document.querySelectorAll(".timeline-event").forEach((eventElem) => {
+          eventElem.addEventListener("click", () => {
+            const modalId = eventElem.getAttribute("data-modal");
+            const modal = document.getElementById(modalId);
+            if (modal) {
+              modal.style.display = "flex";
+            }
+          });
+        });
+
+        // --------- Fechamento dos Modais (Timeline e Foto Ampliada) ---------
+        // Fechar ao clicar no "X"
+        document.querySelectorAll(".modal-close").forEach((closeBtn) => {
+          closeBtn.addEventListener("click", () => {
+            closeBtn.closest(".modal").style.display = "none";
+          });
+        });
+        // Fechar modal ao clicar fora do conteúdo
+        document.querySelectorAll(".modal").forEach((modal) => {
+          modal.addEventListener("click", (e) => {
+            if (e.target === modal) {
+              modal.style.display = "none";
+            }
+          });
+        });
+
+        // --------- Aplicar Rotações Aleatórias aos Photo Cards ---------
+        const rotations = ["rotate-1", "rotate-2", "rotate-3", "rotate-4"];
+        document.querySelectorAll(".photo-card").forEach((card) => {
+          const randomRotation =
+            rotations[Math.floor(Math.random() * rotations.length)];
+          card.classList.add(randomRotation);
+        });
+
+        // --------- Exibir Foto em Tamanho Real ao Clicar no Photo Card ---------
+        document
+          .querySelectorAll(".gallery .photo-card img")
+          .forEach((image) => {
+            image.addEventListener("click", (e) => {
+              // Evita que o clique se propague para o modal da timeline
+              e.stopPropagation();
+              const src = image.getAttribute("src");
+              const photoModal = document.getElementById("photoModal");
+              const fullImage = document.getElementById("fullImage");
+              if (fullImage) {
+                fullImage.setAttribute("src", src);
+              }
+              if (photoModal) {
+                photoModal.style.display = "flex";
+              }
+            });
+          });
+      });
+    </script>
+  </body>
+</html>
